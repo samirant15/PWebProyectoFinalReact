@@ -17,7 +17,7 @@ export default class Panel extends Component {
     }
 
     componentDidMount(){
-    let url = sessionStorage.getItem('admin') == 'true' ? '/admin/all' : '/acortar/all/' + sessionStorage.getItem("username")
+    let url = localStorage.getItem('admin') == 'true' ? '/admin/all' : '/acortar/all/' + localStorage.getItem("username")
     axios.get(API_ROOT + url)
         .then(res => {
             console.log(res.data)
@@ -65,8 +65,8 @@ export default class Panel extends Component {
         dataIndex: 'accion',
         key: 'accion',
         render: text => <div>
-            <Button type="primary" onClick={() => {sessionStorage.setItem("url", text); this.props.history.push("/url");}} ghost>Ver</Button>
-            {sessionStorage.getItem("admin") == 'true' ? <Button type="danger" onClick={() => this.showDeleteConfirm(text)} ghost><Icon type="delete" /></Button> : null}
+            <Button type="primary" onClick={() => {localStorage.setItem("url", text); this.props.history.push("/url");}} ghost>Ver</Button>
+            {localStorage.getItem("admin") == 'true' ? <Button type="danger" onClick={() => this.showDeleteConfirm(text)} ghost><Icon type="delete" /></Button> : null}
         </div>,
       }];
       

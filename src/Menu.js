@@ -42,14 +42,14 @@ export default class Menu extends Component {
   acortar(){
     axios.post(API_ROOT + '/acortar', this.transformRequest({
       url: this.state.url_cortar,
-      username: sessionStorage.getItem("username")
+      username: localStorage.getItem("username")
     }),{
       headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
       }
     })
       .then(res => {
-        sessionStorage.setItem("url", res.data.URLCorta)
+        localStorage.setItem("url", res.data.URLCorta)
         this.openNotificationWithIcon('success', 'URL Acortada!', 'Aquí podrá observar las estadísticas de su URL')
         this.props.history.push(res.data.redirect);
         console.log(res);

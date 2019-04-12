@@ -36,9 +36,9 @@ export default class Login extends Component {
       .then(res => {
         if(res.data.usuario){
           this.openNotificationWithIcon('success', `Bienvenido ${res.data.usuario}!`, '')
-          sessionStorage.setItem("username", res.data.usuario);
-          sessionStorage.setItem("admin", res.data.admin);
-          sessionStorage.removeItem("url");
+          localStorage.setItem("username", res.data.usuario);
+          localStorage.setItem("admin", res.data.admin);
+          localStorage.removeItem("url");
           this.props.history.push("/panel");
         }        
         console.log(res);
@@ -60,9 +60,9 @@ export default class Login extends Component {
       .then(res => {
         if(res.data.usuario){
           this.openNotificationWithIcon('success', `Usuario ${res.data.usuario} Registrado!`, 'Aquí podrá ver sus URLs')
-          sessionStorage.setItem("username", res.data.usuario);
-          sessionStorage.setItem("admin", false);
-          sessionStorage.removeItem("url");
+          localStorage.setItem("username", res.data.usuario);
+          localStorage.setItem("admin", false);
+          localStorage.removeItem("url");
           this.props.history.push("/panel");
         }   
         console.log(res);
@@ -85,17 +85,17 @@ export default class Login extends Component {
     };
 
   render() {
-    console.log("ADMIN: " + sessionStorage.getItem("admin"))
+    console.log("ADMIN: " + localStorage.getItem("admin"))
     const menuCuenta = (
       <Menu>
-          {sessionStorage.getItem("admin") == 'true' ? <Menu.Item key="1" onClick={()=>{this.props.history.push("/admin");}}><Icon type="setting" /> Opciones Admin</Menu.Item> : null}
+          {localStorage.getItem("admin") == 'true' ? <Menu.Item key="1" onClick={()=>{this.props.history.push("/admin");}}><Icon type="setting" /> Opciones Admin</Menu.Item> : null}
           <Menu.Item key="2" onClick={()=>{this.props.history.push("/panel");}}><Icon type="file-done" /> Mis URLs</Menu.Item>          
-          <Menu.Item key="3" onClick={()=>{sessionStorage.removeItem("username"); sessionStorage.removeItem("url"); sessionStorage.removeItem("admin"); this.props.history.push("/");}}><Icon type="logout" /> Cerrar Sesión</Menu.Item>          
+          <Menu.Item key="3" onClick={()=>{localStorage.removeItem("username"); localStorage.removeItem("url"); localStorage.removeItem("admin"); this.props.history.push("/");}}><Icon type="logout" /> Cerrar Sesión</Menu.Item>          
       </Menu>
     );
     return (
     <div>
-      {sessionStorage.getItem("username") ? <Dropdown overlay={menuCuenta}><Button>{sessionStorage.getItem("username")}<Icon type="down" /></Button></Dropdown> :
+      {localStorage.getItem("username") ? <Dropdown overlay={menuCuenta}><Button>{localStorage.getItem("username")}<Icon type="down" /></Button></Dropdown> :
         <div>      
         <Form layout="inline">
           <Form.Item><Input name="login_user" value={this.state.login_user} prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }}/>} onChange={this.onChange} placeholder="Username" /></Form.Item>

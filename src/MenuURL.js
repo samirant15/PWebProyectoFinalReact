@@ -6,6 +6,7 @@ import logo from './assets/Acortar.png'
 import { VictoryPie, VictoryChart, VictoryAxis, VictoryArea, VictoryTheme } from "victory";
 import { Button, PageHeader, Form, Input, Icon, Layout, Card, Row, Col } from 'antd';
 const { Header, Content, Footer } = Layout;
+var QRCode = require('qrcode.react');
 
 export default class MenuURL extends Component {
   constructor(props) {
@@ -33,7 +34,7 @@ export default class MenuURL extends Component {
  }
 
   componentDidMount(){
-    axios.get(API_ROOT + '/ver/' + sessionStorage.getItem("url"))
+    axios.get(API_ROOT + '/ver/' + localStorage.getItem("url"))
       .then(res => {
         console.log(res.data)
         let browsers = ['IE', 'Safari', 'Opera', 'Chrome', 'Netscape', 'Firefox', 'Otro']
@@ -83,23 +84,26 @@ export default class MenuURL extends Component {
             <Card
                 title={
                 <div>
-                    <h1 style={{fontSize: "30px",textAlign: "center",textShadow: "0px 2px 4px #949494",fontWeight: "bold"}}>{`${window.location.hostname }/${sessionStorage.getItem("url")}`}</h1>
+                    <h1 style={{fontSize: "30px",textAlign: "center",textShadow: "0px 2px 4px #949494",fontWeight: "bold"}}>{`${window.location.hostname }/${localStorage.getItem("url")}`}</h1>
                     <p>{this.state.datos_url.URLOriginal}</p>
                 </div>}
                 extra={<a href="#"><Icon type="right-square" theme="twoTone" style={{fontSize: "30px"}}/></a>}
                 style={{ width: "100%" }} type="inner">
                 <Row gutter={16}>
-                    <Col span={12}>
+                    <Col span={8}>
                         <div style={{textAlign: "left", padding: 5,border: 1,borderStyle: "dashed",borderColor: "#1890ff"}}>
                             <strong>URL Original: </strong><p>{this.state.datos_url.URLOriginal}</p>
-                            <strong>URL Corta: </strong><p>{`${window.location.hostname }/${sessionStorage.getItem("url")}`}</p>
+                            <strong>URL Corta: </strong><p>{`${window.location.hostname }/${localStorage.getItem("url")}`}</p>
                         </div>                
                     </Col>
-                    <Col span={12}>
+                    <Col span={8}>
                     <div style={{textAlign: "left", padding: 5,border: 1,borderStyle: "dashed",borderColor: "#1890ff"}}>
                         <strong>Cantidad de Accesos: </strong><p>{this.state.datos_url.Accesos ? this.state.datos_url.Accesos.length : 0}</p>
                         <strong>Último Acceso: </strong><p>{this.state.ultimo_acceso}</p>
                     </div>                    
+                    </Col>
+                    <Col span={8}>
+                      <QRCode value={localStorage.getItem("url")} />
                     </Col>
                 </Row>           
                 <Row style={{textAlign: "left", padding: 5,border: 1,borderStyle: "dashed",borderColor: "#1890ff",marginTop:10}}>
