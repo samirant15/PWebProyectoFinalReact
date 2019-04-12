@@ -32,11 +32,10 @@ export default class MenuURL extends Component {
     return (
       <div>
         <header id="header" className="clearfix" style={{boxShadow: "0 2px 8px #f0f1f2"}}>
-            <PageHeader title={<img src={logo} style={{width: '60%'}} />} subTitle="Siempre corto, nunca largo" 
-            extra={<Login/>}/>
+            <PageHeader title={<img src={logo} onClick={()=>{this.props.history.push("/");}} style={{width: '60%'}} />} subTitle="Siempre corto, nunca largo" 
+            extra={<Login history={this.props.history}/>}/>
           </header>     
-          <Content style={{ padding: '50px 50px', textAlign: "center" }}>
-            
+          <Content style={{ padding: '50px 50px', textAlign: "center" }}>            
             <Card
                 title={
                 <div>

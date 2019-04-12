@@ -42,13 +42,14 @@ export default class Menu extends Component {
   acortar(){
     axios.post(API_ROOT + '/acortar', this.transformRequest({
       url: this.state.url_cortar,
+      username: sessionStorage.getItem("username")
     }),{
       headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
       }
     })
       .then(res => {
-        sessionStorage.setItem("url", res.data.dir.URLCorta)
+        sessionStorage.setItem("url", res.data.URLCorta)
         this.openNotificationWithIcon('success', 'URL Acortada!', 'Aquí podrá observar las estadísticas de su URL')
         this.props.history.push(res.data.redirect);
         console.log(res);
@@ -73,8 +74,8 @@ export default class Menu extends Component {
     return (        
       <div>          
           <header id="header" className="clearfix" style={{boxShadow: "0 2px 8px #f0f1f2"}}>
-            <PageHeader title={<img src={logo} style={{width: '60%'}} />} subTitle="Siempre corto, nunca largo" 
-            extra={<Login/>}/>
+            <PageHeader title={<img src={logo} href="/" style={{width: '60%'}} />} subTitle="Siempre corto, nunca largo" 
+            extra={<Login history={this.props.history}/>}/>
           </header>     
           <Content style={{ padding: '100px 50px', textAlign: "center" }}>
             <h1 style={{fontSize: "50px",textAlign: "center",textShadow: "0px 2px 4px #949494",fontWeight: "bold"}}>¡WOW, SUS URLs MÁS CORTOS QUE NUNCA!</h1>
@@ -85,7 +86,7 @@ export default class Menu extends Component {
           <Footer style={{    width: "100%",textAlign: "center",position: "fixed",bottom: 0}}>
             Programación Web: Proyecto Final - © Samir Comprés (2015-0798)
           </Footer>   
-          <ParticleComponent />
+          {/* <ParticleComponent /> */}
       </div>
     )
   }
