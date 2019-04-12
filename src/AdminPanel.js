@@ -5,6 +5,7 @@ import Login from './Login'
 import logo from './assets/Acortar.png'
 import { Button, PageHeader, Form, Input, Icon, Layout, notification, Table  } from 'antd';
 const { Header, Content, Footer } = Layout;
+var CryptoJS = require("crypto-js");
 
 export default class AdminPanel extends Component {
     constructor(props) {
@@ -19,6 +20,8 @@ export default class AdminPanel extends Component {
       }
 
     componentDidMount(){
+        if(CryptoJS.AES.decrypt(localStorage.getItem("admin"),'secreto').toString(CryptoJS.enc.Utf8) !== 'true')
+            this.props.history.push("/");
         axios.get(API_ROOT + '/admin/users')
         .then(res => {
             let table = res.data.map(usr => { return {username: usr.username, nombre: usr.nombre, admin: {is: usr.administrator, id: usr.username}}})

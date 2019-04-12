@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Button, Modal, Form, Input, Icon, Tooltip, Dropdown, Menu, notification } from 'antd';
 import axios from 'axios';
 import { API_ROOT } from './Routes'
+var CryptoJS = require("crypto-js");
 
 export default class Login extends Component {
   constructor(props) {
@@ -36,9 +37,9 @@ export default class Login extends Component {
       .then(res => {
         if(res.data.usuario){
           this.openNotificationWithIcon('success', `Bienvenido ${res.data.usuario}!`, '')
-          localStorage.setItem("username", res.data.usuario);
-          localStorage.setItem("admin", res.data.admin);
-          localStorage.removeItem("url");
+          localStorage.setItem("username", CryptoJS.AES.encrypt(res.data.usuario, 'secreto'));
+          localStorage.setItem("admin", CryptoJS.AES.encrypt(res.data.admin.toString(), 'secreto'));
+          localStorage.setItem("url", "");
           this.props.history.push("/panel");
         }        
         console.log(res);
@@ -60,9 +61,9 @@ export default class Login extends Component {
       .then(res => {
         if(res.data.usuario){
           this.openNotificationWithIcon('success', `Usuario ${res.data.usuario} Registrado!`, 'Aquí podrá ver sus URLs')
-          localStorage.setItem("username", res.data.usuario);
-          localStorage.setItem("admin", false);
-          localStorage.removeItem("url");
+          localStorage.setItem("username", CryptoJS.AES.encrypt(res.data.usuario, 'secreto'));
+          localStorage.setItem("admin", CryptoJS.AES.encrypt(false, 'secreto'));
+          localStorage.setItem("url", "");
           this.props.history.push("/panel");
         }   
         console.log(res);
@@ -85,17 +86,17 @@ export default class Login extends Component {
     };
 
   render() {
-    console.log("ADMIN: " + localStorage.getItem("admin"))
+    // console.log("ADMIN: " + CryptoJS.AES.decrypt(localStorage.getItem("admin"),'secreto').toString(CryptoJS.enc.Utf8).toString(CryptoJS.enc.Utf8))
     const menuCuenta = (
       <Menu>
-          {localStorage.getItem("admin") == 'true' ? <Menu.Item key="1" onClick={()=>{this.props.history.push("/admin");}}><Icon type="setting" /> Opciones Admin</Menu.Item> : null}
+          {CryptoJS.AES.decrypt(localStorage.getItem("admin"),'secreto').toString(CryptoJS.enc.Utf8) == 'true' ? <Menu.Item key="1" onClick={()=>{this.props.history.push("/admin");}}><Icon type="setting" /> Opciones Admin</Menu.Item> : null}
           <Menu.Item key="2" onClick={()=>{this.props.history.push("/panel");}}><Icon type="file-done" /> Mis URLs</Menu.Item>          
-          <Menu.Item key="3" onClick={()=>{localStorage.removeItem("username"); localStorage.removeItem("url"); localStorage.removeItem("admin"); this.props.history.push("/");}}><Icon type="logout" /> Cerrar Sesión</Menu.Item>          
+          <Menu.Item key="3" onClick={()=>{localStorage.setItem("username",""); localStorage.setItem("url",""); localStorage.setItem("admin",""); this.props.history.push("/");}}><Icon type="logout" /> Cerrar Sesión</Menu.Item>          
       </Menu>
     );
     return (
     <div>
-      {localStorage.getItem("username") ? <Dropdown overlay={menuCuenta}><Button>{localStorage.getItem("username")}<Icon type="down" /></Button></Dropdown> :
+      {CryptoJS.AES.decrypt(localStorage.getItem("username"),'secreto').toString(CryptoJS.enc.Utf8) ? <Dropdown overlay={menuCuenta}><Button>{CryptoJS.AES.decrypt(localStorage.getItem("username"),'secreto').toString(CryptoJS.enc.Utf8)}<Icon type="down" /></Button></Dropdown> :
         <div>      
         <Form layout="inline">
           <Form.Item><Input name="login_user" value={this.state.login_user} prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }}/>} onChange={this.onChange} placeholder="Username" /></Form.Item>

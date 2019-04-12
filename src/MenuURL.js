@@ -7,6 +7,7 @@ import { VictoryPie, VictoryChart, VictoryAxis, VictoryArea, VictoryTheme } from
 import { Button, PageHeader, Form, Input, Icon, Layout, Card, Row, Col } from 'antd';
 const { Header, Content, Footer } = Layout;
 var QRCode = require('qrcode.react');
+var CryptoJS = require("crypto-js");
 
 export default class MenuURL extends Component {
   constructor(props) {
@@ -34,7 +35,7 @@ export default class MenuURL extends Component {
  }
 
   componentDidMount(){
-    axios.get(API_ROOT + '/ver/' + localStorage.getItem("url"))
+    axios.get(API_ROOT + '/ver/' + CryptoJS.AES.decrypt(localStorage.getItem("url"),'secreto').toString(CryptoJS.enc.Utf8))
       .then(res => {
         console.log(res.data)
         let browsers = ['IE', 'Safari', 'Opera', 'Chrome', 'Netscape', 'Firefox', 'Otro']
@@ -84,7 +85,7 @@ export default class MenuURL extends Component {
             <Card
                 title={
                 <div>
-                    <h1 style={{fontSize: "30px",textAlign: "center",textShadow: "0px 2px 4px #949494",fontWeight: "bold"}}>{`${window.location.hostname }/${localStorage.getItem("url")}`}</h1>
+                    <h1 style={{fontSize: "30px",textAlign: "center",textShadow: "0px 2px 4px #949494",fontWeight: "bold"}}>{`${window.location.hostname }/${CryptoJS.AES.decrypt(localStorage.getItem("url"),'secreto').toString(CryptoJS.enc.Utf8)}`}</h1>
                     <p>{this.state.datos_url.URLOriginal}</p>
                 </div>}
                 extra={<a href="#"><Icon type="right-square" theme="twoTone" style={{fontSize: "30px"}}/></a>}
@@ -93,7 +94,7 @@ export default class MenuURL extends Component {
                     <Col span={8}>
                         <div style={{textAlign: "left", padding: 5,border: 1,borderStyle: "dashed",borderColor: "#1890ff"}}>
                             <strong>URL Original: </strong><p>{this.state.datos_url.URLOriginal}</p>
-                            <strong>URL Corta: </strong><p>{`${window.location.hostname }/${localStorage.getItem("url")}`}</p>
+                            <strong>URL Corta: </strong><p>{`${window.location.hostname }/${CryptoJS.AES.decrypt(localStorage.getItem("url"),'secreto').toString(CryptoJS.enc.Utf8)}`}</p>
                         </div>                
                     </Col>
                     <Col span={8}>
@@ -103,7 +104,7 @@ export default class MenuURL extends Component {
                     </div>                    
                     </Col>
                     <Col span={8}>
-                      <QRCode value={localStorage.getItem("url")} />
+                      <QRCode value={CryptoJS.AES.decrypt(localStorage.getItem("url"),'secreto').toString(CryptoJS.enc.Utf8)} />
                     </Col>
                 </Row>           
                 <Row style={{textAlign: "left", padding: 5,border: 1,borderStyle: "dashed",borderColor: "#1890ff",marginTop:10}}>

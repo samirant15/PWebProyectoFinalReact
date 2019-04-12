@@ -6,6 +6,7 @@ import logo from './assets/Acortar.png'
 import ParticleComponent from "./ParticleComponent";
 import { Button, PageHeader, Form, Input, Icon, Layout, notification  } from 'antd';
 const { Header, Content, Footer } = Layout;
+var CryptoJS = require("crypto-js");
 
 
 export default class Menu extends Component {
@@ -42,14 +43,14 @@ export default class Menu extends Component {
   acortar(){
     axios.post(API_ROOT + '/acortar', this.transformRequest({
       url: this.state.url_cortar,
-      username: localStorage.getItem("username")
+      username: CryptoJS.AES.decrypt(localStorage.getItem("username"),'secreto').toString(CryptoJS.enc.Utf8)
     }),{
       headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
       }
     })
       .then(res => {
-        localStorage.setItem("url", res.data.URLCorta)
+        localStorage.setItem("url", CryptoJS.AES.encrypt(res.data.URLCorta, 'secreto'))
         this.openNotificationWithIcon('success', 'URL Acortada!', 'Aquí podrá observar las estadísticas de su URL')
         this.props.history.push(res.data.redirect);
         console.log(res);

@@ -5,6 +5,7 @@ import Login from './Login'
 import logo from './assets/Acortar.png'
 import { Button, PageHeader, Form, Input, Icon, Layout, notification, Table, Modal  } from 'antd';
 const { Header, Content, Footer } = Layout;
+var CryptoJS = require("crypto-js");
 
 export default class Panel extends Component {
     constructor(props) {
@@ -17,7 +18,7 @@ export default class Panel extends Component {
     }
 
     componentDidMount(){
-    let url = localStorage.getItem('admin') == 'true' ? '/admin/all' : '/acortar/all/' + localStorage.getItem("username")
+    let url = CryptoJS.AES.decrypt(localStorage.getItem('admin'),'secreto').toString(CryptoJS.enc.Utf8) == 'true' ? '/admin/all' : '/acortar/all/' + CryptoJS.AES.decrypt(localStorage.getItem("username"),'secreto').toString(CryptoJS.enc.Utf8)
     axios.get(API_ROOT + url)
         .then(res => {
             console.log(res.data)
@@ -65,8 +66,8 @@ export default class Panel extends Component {
         dataIndex: 'accion',
         key: 'accion',
         render: text => <div>
-            <Button type="primary" onClick={() => {localStorage.setItem("url", text); this.props.history.push("/url");}} ghost>Ver</Button>
-            {localStorage.getItem("admin") == 'true' ? <Button type="danger" onClick={() => this.showDeleteConfirm(text)} ghost><Icon type="delete" /></Button> : null}
+            <Button type="primary" onClick={() => {localStorage.setItem("url", CryptoJS.AES.encrypt(text, 'secreto')); this.props.history.push("/url");}} ghost>Ver</Button>
+            {CryptoJS.AES.decrypt(localStorage.getItem("admin"),'secreto').toString(CryptoJS.enc.Utf8) == 'true' ? <Button type="danger" onClick={() => this.showDeleteConfirm(text)} ghost><Icon type="delete" /></Button> : null}
         </div>,
       }];
       

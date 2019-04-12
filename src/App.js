@@ -10,6 +10,12 @@ import AdminPanel from './AdminPanel';
 
 
 class App extends Component {
+  componentWillMount(){
+    if (localStorage.getItem("admin") === null)
+      localStorage.setItem("admin", false)
+    if (localStorage.getItem("username") === null)
+      localStorage.setItem("username", false)
+  }
   render() {
     return (
       <Router history={history}>
