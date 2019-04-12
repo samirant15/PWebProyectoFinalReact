@@ -1,22 +1,75 @@
 import React, { Component } from 'react'
+import axios from 'axios';
+import { API_ROOT } from './Routes'
+import Login from './Login'
+import logo from './assets/Acortar.png'
 import ParticleComponent from "./ParticleComponent";
 import { Button, PageHeader, Form, Input, Icon, Layout } from 'antd';
 const { Header, Content, Footer } = Layout;
 
 
 export default class Menu extends Component {
+  constructor(props) {
+    console.log(props)
+    super(props);
+
+    this.state = {
+      url_cortar: '',
+      cant_acortados: 0
+
+    }
+    this.onChange = this.onChange.bind(this);
+    this.acortar = this.acortar.bind(this);
+    this.transformRequest = this.transformRequest.bind(this);
+  }
+
+  componentDidMount(){
+    axios.get(API_ROOT + '/acortar/count')
+      .then(cant => {
+        this.setState({cant_acortados: cant.data})
+      }).catch(error => {
+        console.log(error);
+      })
+  }
+
+  onChange(e) {
+    this.setState({
+      [e.target.name]: e.target.value,
+    })    
+  }
+
+  acortar(){
+    axios.post(API_ROOT + '/acortar', this.transformRequest({
+      url: this.state.url_cortar,
+    }),{
+      headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+      .then(res => {
+        console.log(res);
+      }).catch(error => {
+        console.log(error);
+      })
+  }
+
+  transformRequest = (jsonData = {}) =>
+  Object.entries(jsonData)
+    .map(x => `${encodeURIComponent(x[0])}=${encodeURIComponent(x[1])}`)
+    .join('&');
+
   render() {
     return (        
       <div>          
           <header id="header" className="clearfix" style={{boxShadow: "0 2px 8px #f0f1f2"}}>
-            <PageHeader title={<h3 style={{padding: 10,borderRadius: 10,backgroundColor:"#E34A6F", color: "#fff"}}>Acortar!</h3>} subTitle="Siempre corto, nunca largo" 
-            extra={<LoginForm/>}/>
+            <PageHeader title={<img src={logo} style={{width: '60%'}} />} subTitle="Siempre corto, nunca largo" 
+            extra={<Login/>}/>
           </header>     
           <Content style={{ padding: '100px 50px', textAlign: "center" }}>
             <h1 style={{fontSize: "50px",textAlign: "center",textShadow: "0px 2px 4px #949494",fontWeight: "bold"}}>¡WOW, SUS URLs MÁS CORTOS QUE NUNCA!</h1>
-            <Input style={{ height: 60,fontSize: 20}} size="large" placeholder="URL a cortar" />
-            <Button type="primary" size='large' style={{width: "30%",margin: 20,fontSize: "xx-large",height: "auto"}}>ACORTAR! &nbsp;<Icon type="export" /></Button>
-            <h1 style={{marginTop: 50}}><Icon type="fund" theme="twoTone" /> 0 URLs Acortados!</h1>
+            <Input name="url_cortar" style={{ height: 60,fontSize: 20}} size="large" placeholder="URL a cortar" onChange={this.onChange} />
+            <Button onClick={() => this.acortar()} type="primary" size='large' style={{width: "30%",margin: 20,fontSize: "xx-large",height: "auto"}}>ACORTAR! &nbsp;<Icon type="export" /></Button>
+            <h1 style={{marginTop: 50}}><Icon type="fund" theme="twoTone" />{` ${this.state.cant_acortados} URLs Acortados!`}</h1>
           </Content>
           <Footer style={{    width: "100%",textAlign: "center",position: "fixed",bottom: 0}}>
             Programación Web: Proyecto Final - © Samir Comprés (2015-0798)
@@ -25,19 +78,4 @@ export default class Menu extends Component {
       </div>
     )
   }
-}
-
-const LoginForm = (props) => {
-    return (
-        <Form layout="inline" onSubmit={()=>{}}>
-            <Form.Item><Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="Username" /></Form.Item>
-            <Form.Item><Input prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} type="password" placeholder="Password" /></Form.Item>
-            <Form.Item>
-            <Button.Group>
-                <Button type="primary" htmlType="submit">Log in <Icon type="login" /></Button>
-                <Button type="primary" htmlType="submit">Registrarme <Icon type="user-add" /></Button>
-            </Button.Group>            
-            </Form.Item>
-        </Form>
-    )
 }
