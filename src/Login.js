@@ -37,6 +37,7 @@ export default class Login extends Component {
         if(res.data.usuario){
           this.openNotificationWithIcon('success', `Bienvenido ${res.data.usuario}!`, '')
           sessionStorage.setItem("username", res.data.usuario);
+          sessionStorage.setItem("admin", res.data.admin);
           sessionStorage.removeItem("url");
           this.props.history.push("/panel");
         }        
@@ -60,6 +61,7 @@ export default class Login extends Component {
         if(res.data.usuario){
           this.openNotificationWithIcon('success', `Usuario ${res.data.usuario} Registrado!`, 'Aquí podrá ver sus URLs')
           sessionStorage.setItem("username", res.data.usuario);
+          sessionStorage.setItem("admin", false);
           sessionStorage.removeItem("url");
           this.props.history.push("/panel");
         }   
@@ -83,11 +85,12 @@ export default class Login extends Component {
     };
 
   render() {
+    console.log("ADMIN: " + sessionStorage.getItem("admin"))
     const menuCuenta = (
-      <Menu onClick={()=>{}}>
-          <Menu.Item key="1"><Icon type="setting" /> Opciones Admin</Menu.Item>
+      <Menu>
+          {sessionStorage.getItem("admin") == 'true' ? <Menu.Item key="1" onClick={()=>{this.props.history.push("/admin");}}><Icon type="setting" /> Opciones Admin</Menu.Item> : null}
           <Menu.Item key="2" onClick={()=>{this.props.history.push("/panel");}}><Icon type="file-done" /> Mis URLs</Menu.Item>          
-          <Menu.Item key="3" onClick={()=>{sessionStorage.removeItem("username"); sessionStorage.removeItem("url"); this.props.history.push("/");}}><Icon type="logout" /> Cerrar Sesión</Menu.Item>          
+          <Menu.Item key="3" onClick={()=>{sessionStorage.removeItem("username"); sessionStorage.removeItem("url"); sessionStorage.removeItem("admin"); this.props.history.push("/");}}><Icon type="logout" /> Cerrar Sesión</Menu.Item>          
       </Menu>
     );
     return (

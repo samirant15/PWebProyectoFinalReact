@@ -52,12 +52,8 @@ export default class MenuURL extends Component {
             pieData.push({x: browsers[i], y: cont})
         }
         //ACCESOS POR TIEMPO
+        // console.log(fechas)
         let chartData = [];
-        // for(var i = 0; i < fechas.length; ++i) {
-        //     if(!chartData[fechas[i]])
-        //         chartData[fechas[i]] = 0;
-        //     ++chartData[fechas[i]];
-        // }
         for (let i=0; i<fechas.length; i++){
           let cont = 1
           for (let j=0; j<fechas.length; j++){
@@ -68,8 +64,8 @@ export default class MenuURL extends Component {
               this.arrayRemove(fechas, fechas[i])
             }              
           } 
-        }
-        console.log(chartData)
+        }        
+        // console.log(chartData)
         this.setState({datos_url: res.data, ultimo_acceso: res.data.Accesos.length > 0 ? res.data.Accesos[res.data.Accesos.length-1].fecha : 'No Aplica', pieData: pieData, chartData: chartData})        
       }).catch(error => {
         console.log(error);
