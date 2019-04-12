@@ -4,7 +4,7 @@ import { API_ROOT } from './Routes'
 import Login from './Login'
 import logo from './assets/Acortar.png'
 import ParticleComponent from "./ParticleComponent";
-import { Button, PageHeader, Form, Input, Icon, Layout } from 'antd';
+import { Button, PageHeader, Form, Input, Icon, Layout, notification  } from 'antd';
 const { Header, Content, Footer } = Layout;
 
 
@@ -21,6 +21,7 @@ export default class Menu extends Component {
     this.onChange = this.onChange.bind(this);
     this.acortar = this.acortar.bind(this);
     this.transformRequest = this.transformRequest.bind(this);
+    this.openNotificationWithIcon = this.openNotificationWithIcon.bind(this);
   }
 
   componentDidMount(){
@@ -47,6 +48,9 @@ export default class Menu extends Component {
       }
     })
       .then(res => {
+        sessionStorage.setItem("url", res.data.dir.URLCorta)
+        this.openNotificationWithIcon('success', 'URL Acortada!', 'Aquí podrá observar las estadísticas de su URL')
+        this.props.history.push(res.data.redirect);
         console.log(res);
       }).catch(error => {
         console.log(error);
@@ -57,6 +61,13 @@ export default class Menu extends Component {
   Object.entries(jsonData)
     .map(x => `${encodeURIComponent(x[0])}=${encodeURIComponent(x[1])}`)
     .join('&');
+
+    openNotificationWithIcon = (type, msj, desc) => {
+      notification[type]({
+        message: msj,
+        description: desc,
+      });
+    };
 
   render() {
     return (        
