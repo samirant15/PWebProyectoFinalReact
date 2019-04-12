@@ -3,6 +3,7 @@ import axios from 'axios';
 import { API_ROOT } from './Routes'
 import Login from './Login'
 import logo from './assets/Acortar.png'
+import { VictoryPie, VictoryChart, VictoryAxis, VictoryArea, VictoryTheme } from "victory";
 import { Button, PageHeader, Form, Input, Icon, Layout, Card, Row, Col } from 'antd';
 const { Header, Content, Footer } = Layout;
 
@@ -13,16 +14,63 @@ export default class MenuURL extends Component {
 
     this.state = {
       datos_url: {},
+      pieData: [],
+      chartData: [],
       ultimo_acceso: 'No Aplica'
     }
-    // this.onChange = this.onChange.bind(this);    
+    this.arrayRemove = this.arrayRemove.bind(this);    
   }
+
+  arrayRemove(array, item) {
+
+    for(var i = 0; i < array.length; i++){
+      if(array[i]==item) {
+          array.splice(i,1);
+          i--; // Prevent skipping an item
+      }
+  }
+ 
+ }
 
   componentDidMount(){
     axios.get(API_ROOT + '/ver/' + sessionStorage.getItem("url"))
       .then(res => {
         console.log(res.data)
-        this.setState({datos_url: res.data, ultimo_acceso: res.data.Accesos.length > 0 ? res.data.Accesos[res.data.Accesos.length-1].fecha : 'No Aplica'})        
+        let browsers = ['IE', 'Safari', 'Opera', 'Chrome', 'Netscape', 'Firefox', 'Otro']
+        //PIE DATA
+        let pieData = []
+        let fechas = []
+        for(let i=0; i < browsers.length; i++){
+          let cont = 0
+          res.data.Accesos.forEach(acceso => {
+            if(acceso.navegaor === browsers[i]){
+              cont++;
+              fechas.push(acceso.fecha.split(' ')[0])
+            }                            
+          })
+          if(cont > 0)
+            pieData.push({x: browsers[i], y: cont})
+        }
+        //ACCESOS POR TIEMPO
+        let chartData = [];
+        // for(var i = 0; i < fechas.length; ++i) {
+        //     if(!chartData[fechas[i]])
+        //         chartData[fechas[i]] = 0;
+        //     ++chartData[fechas[i]];
+        // }
+        for (let i=0; i<fechas.length; i++){
+          let cont = 1
+          for (let j=0; j<fechas.length; j++){
+            if(fechas[i] === fechas[j])
+              cont++;
+            if(j == fechas.length-1){              
+              chartData.push({x: fechas[i], y: cont})
+              this.arrayRemove(fechas, fechas[i])
+            }              
+          } 
+        }
+        console.log(chartData)
+        this.setState({datos_url: res.data, ultimo_acceso: res.data.Accesos.length > 0 ? res.data.Accesos[res.data.Accesos.length-1].fecha : 'No Aplica', pieData: pieData, chartData: chartData})        
       }).catch(error => {
         console.log(error);
       })
@@ -59,7 +107,15 @@ export default class MenuURL extends Component {
                     </Col>
                 </Row>           
                 <Row style={{textAlign: "left", padding: 5,border: 1,borderStyle: "dashed",borderColor: "#1890ff",marginTop:10}}>
-                
+                <Col span={12}>
+                    <VictoryPie data={this.state.pieData} colorScale={["tomato", "orange", "gold", "cyan", "navy" ]}/>
+                  </Col>
+                  <Col span={12}>
+                  <VictoryChart theme={VictoryTheme.material} >
+                      <VictoryArea data={this.state.chartData} style={{ data: { fill: "#c43a31" } }}/>
+                      <VictoryAxis/>
+                    </VictoryChart>        
+                  </Col>
                 </Row>     
                 </Card>
           </Content>
