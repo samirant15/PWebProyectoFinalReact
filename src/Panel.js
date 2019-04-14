@@ -19,7 +19,7 @@ export default class Panel extends Component {
 
     componentDidMount(){
     let url = CryptoJS.AES.decrypt(localStorage.getItem('admin'),'secreto').toString(CryptoJS.enc.Utf8) == 'true' ? '/admin/all' : '/acortar/all/' + CryptoJS.AES.decrypt(localStorage.getItem("username"),'secreto').toString(CryptoJS.enc.Utf8)
-    axios.get(API_ROOT + url)
+    axios.get(API_ROOT + url + '?token=' + localStorage.getItem("token"))
         .then(res => {
             console.log(res.data)
             let datos = res.data.URLs.map((r,i) => {return {key: i, URLOriginal: r.URLOriginal, URLCorta: `${window.location.hostname }/${r.URLCorta}`, accion: r.URLCorta}});
@@ -55,12 +55,12 @@ export default class Panel extends Component {
         title: 'URL Original',
         dataIndex: 'URLOriginal',
         key: 'URLOriginal',
-        render: text => <a href="javascript:;">{text}</a>,
+        render: text => <a href={text}>{text}</a>,
       }, {
         title: 'URL Corta',
         dataIndex: 'URLCorta',
         key: 'URLCorta',
-        render: text => <a href="javascript:;">{text}</a>,
+        render: text => <a href={text}>{text}</a>,
       },{
         title: "Acción",
         dataIndex: 'accion',

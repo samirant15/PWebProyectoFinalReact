@@ -16,13 +16,14 @@ export default class AdminPanel extends Component {
           users: [],
           users_table: []
         }
-        this.changeAdmin = this.changeAdmin.bind(this);    
+        this.changeAdmin = this.changeAdmin.bind(this);   
       }
 
     componentDidMount(){
         if(CryptoJS.AES.decrypt(localStorage.getItem("admin"),'secreto').toString(CryptoJS.enc.Utf8) !== 'true')
             this.props.history.push("/");
-        axios.get(API_ROOT + '/admin/users')
+        
+        axios.get(API_ROOT + '/admin/users?token=' + localStorage.getItem("token"))
         .then(res => {
             let table = res.data.map(usr => { return {username: usr.username, nombre: usr.nombre, admin: {is: usr.administrator, id: usr.username}}})
             this.setState({users: res.data, users_table: table})
@@ -33,7 +34,7 @@ export default class AdminPanel extends Component {
     }
 
     changeAdmin(usr){
-        axios.post(API_ROOT + '/admin/change_admin/' + usr)
+        axios.post(API_ROOT + '/admin/change_admin/' + usr + '?token=' + localStorage.getItem("token"))
         .then(res => {
             let table = res.data.map(usr => { return {username: usr.username, nombre: usr.nombre, admin: {is: usr.administrator, id: usr.username}}})
             this.setState({users: res.data, users_table: table})
@@ -57,7 +58,7 @@ export default class AdminPanel extends Component {
         title: "Admin",
         dataIndex: 'admin',
         key: 'admin',
-        render: text => <Button type={text.is == true ? 'primary' : 'danger'} onClick={() => {this.changeAdmin(text.id)}} ghost>{text.is == true ? <Icon type="check-circle" /> : <Icon type="close-circle" />}</Button>,
+        render: text => text.id !== CryptoJS.AES.decrypt(localStorage.getItem("username"),'secreto').toString(CryptoJS.enc.Utf8) ? <Button type={text.is == true ? 'primary' : 'danger'} onClick={() => {this.changeAdmin(text.id)}} ghost>{text.is == true ? <Icon type="check-circle" /> : <Icon type="close-circle" />}</Button> : null,
       }];
     return (
       <div>

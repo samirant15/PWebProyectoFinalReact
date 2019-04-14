@@ -5,6 +5,7 @@ import Login from './Login'
 import logo from './assets/Acortar.png'
 import ParticleComponent from "./ParticleComponent";
 import { Button, PageHeader, Form, Input, Icon, Layout, notification  } from 'antd';
+import { ETIME } from 'constants';
 const { Header, Content, Footer } = Layout;
 var CryptoJS = require("crypto-js");
 
@@ -39,11 +40,18 @@ export default class Menu extends Component {
       [e.target.name]: e.target.value,
     })    
   }
+  
 
   acortar(){
+    if(!this.state.url_cortar.includes("https://")){
+      this.openNotificationWithIcon('error', `Revise su URL!`, 'Debe ser una url encriptada (HTTPS)')
+      return
+    }
+      
     axios.post(API_ROOT + '/acortar', this.transformRequest({
       url: this.state.url_cortar,
-      username: CryptoJS.AES.decrypt(localStorage.getItem("username"),'secreto').toString(CryptoJS.enc.Utf8)
+      username: CryptoJS.AES.decrypt(localStorage.getItem("username"),'secreto').toString(CryptoJS.enc.Utf8),
+      token: localStorage.getItem("token")
     }),{
       headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
@@ -80,7 +88,7 @@ export default class Menu extends Component {
           </header>     
           <Content style={{ padding: '100px 50px', textAlign: "center" }}>
             <h1 style={{fontSize: "50px",textAlign: "center",textShadow: "0px 2px 4px #949494",fontWeight: "bold"}}>¡WOW, SUS URLs MÁS CORTOS QUE NUNCA!</h1>
-            <Input name="url_cortar" style={{ height: 60,fontSize: 20}} size="large" placeholder="URL a cortar" onChange={this.onChange} />
+            <Input name="url_cortar" value={this.state.url_cortar} style={{ height: 60,fontSize: 20}} size="large" placeholder="URL a cortar" onChange={this.onChange} />
             <Button onClick={() => this.acortar()} type="primary" size='large' style={{width: "30%",margin: 20,fontSize: "xx-large",height: "auto"}}>ACORTAR! &nbsp;<Icon type="export" /></Button>
             <h1 style={{marginTop: 50}}><Icon type="fund" theme="twoTone" />{` ${this.state.cant_acortados} URLs Acortados!`}</h1>
           </Content>

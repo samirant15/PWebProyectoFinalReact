@@ -33,13 +33,14 @@ export default class Login extends Component {
   }
 
   login(){
-    axios.post(API_ROOT + `/autenticar/${this.state.login_user}/${this.state.login_pass}`)
+    axios.post(API_ROOT + `/autenticar/${this.state.login_user}/${this.state.login_pass}`, this.transformRequest({token: localStorage.getItem("token")}),{headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
       .then(res => {
         if(res.data.usuario){
           this.openNotificationWithIcon('success', `Bienvenido ${res.data.usuario}!`, '')
           localStorage.setItem("username", CryptoJS.AES.encrypt(res.data.usuario, 'secreto'));
           localStorage.setItem("admin", CryptoJS.AES.encrypt(res.data.admin.toString(), 'secreto'));
           localStorage.setItem("url", "");
+          localStorage.setItem("token", res.data.token);          
           this.props.history.push("/panel");
         }        
         console.log(res);
@@ -52,7 +53,7 @@ export default class Login extends Component {
     axios.post(API_ROOT + '/registrar', this.transformRequest({
       username: this.state.username,
       password: this.state.password,
-      nombre: this.state.nombre,
+      nombre: this.state.nombre
     }),{
       headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
@@ -64,6 +65,7 @@ export default class Login extends Component {
           localStorage.setItem("username", CryptoJS.AES.encrypt(res.data.usuario, 'secreto'));
           localStorage.setItem("admin", CryptoJS.AES.encrypt(false, 'secreto'));
           localStorage.setItem("url", "");
+          localStorage.setItem("token", res.data.token);
           this.props.history.push("/panel");
         }   
         console.log(res);
@@ -91,7 +93,7 @@ export default class Login extends Component {
       <Menu>
           {CryptoJS.AES.decrypt(localStorage.getItem("admin"),'secreto').toString(CryptoJS.enc.Utf8) == 'true' ? <Menu.Item key="1" onClick={()=>{this.props.history.push("/admin");}}><Icon type="setting" /> Opciones Admin</Menu.Item> : null}
           <Menu.Item key="2" onClick={()=>{this.props.history.push("/panel");}}><Icon type="file-done" /> Mis URLs</Menu.Item>          
-          <Menu.Item key="3" onClick={()=>{localStorage.setItem("username",""); localStorage.setItem("url",""); localStorage.setItem("admin",""); this.props.history.push("/");}}><Icon type="logout" /> Cerrar Sesión</Menu.Item>          
+          <Menu.Item key="3" onClick={()=>{localStorage.setItem("username",""); localStorage.setItem("url",""); localStorage.setItem("admin",""); localStorage.setItem("token", ""); this.props.history.push("/");}}><Icon type="logout" /> Cerrar Sesión</Menu.Item>          
       </Menu>
     );
     return (

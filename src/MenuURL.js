@@ -35,7 +35,10 @@ export default class MenuURL extends Component {
  }
 
   componentDidMount(){
-    axios.get(API_ROOT + '/ver/' + CryptoJS.AES.decrypt(localStorage.getItem("url"),'secreto').toString(CryptoJS.enc.Utf8))
+    if(localStorage.getItem("url") === "" || localStorage.getItem("admin") === null)
+            this.props.history.push("/");
+          
+    axios.get(API_ROOT + '/ver?token=' + localStorage.getItem("token") + '&id=' + CryptoJS.AES.decrypt(localStorage.getItem("url"),'secreto').toString(CryptoJS.enc.Utf8))
       .then(res => {
         console.log(res.data)
         let browsers = ['IE', 'Safari', 'Opera', 'Chrome', 'Netscape', 'Firefox', 'Otro']
@@ -75,6 +78,7 @@ export default class MenuURL extends Component {
   }
 
   render() {
+    let urlCorta = `https://${window.location.hostname }/${CryptoJS.AES.decrypt(localStorage.getItem("url"),'secreto').toString(CryptoJS.enc.Utf8)}`
     return (
       <div>
         <header id="header" className="clearfix" style={{boxShadow: "0 2px 8px #f0f1f2"}}>
@@ -85,16 +89,16 @@ export default class MenuURL extends Component {
             <Card
                 title={
                 <div>
-                    <h1 style={{fontSize: "30px",textAlign: "center",textShadow: "0px 2px 4px #949494",fontWeight: "bold"}}>{`${window.location.hostname }/${CryptoJS.AES.decrypt(localStorage.getItem("url"),'secreto').toString(CryptoJS.enc.Utf8)}`}</h1>
-                    <p>{this.state.datos_url.URLOriginal}</p>
+                    <a href={urlCorta} style={{fontSize: "30px",textAlign: "center",textShadow: "0px 2px 4px #949494",fontWeight: "bold"}}>{urlCorta}</a>
+                    <p><a style={{color: "black"}} href={this.state.datos_url.URLOriginal}>{this.state.datos_url.URLOriginal}</a></p>
                 </div>}
-                extra={<a href="#"><Icon type="right-square" theme="twoTone" style={{fontSize: "30px"}}/></a>}
+                // extra={<a href="#"><Icon type="right-square" theme="twoTone" style={{fontSize: "30px"}}/></a>}
                 style={{ width: "100%" }} type="inner">
                 <Row gutter={16}>
                     <Col span={8}>
                         <div style={{textAlign: "left", padding: 5,border: 1,borderStyle: "dashed",borderColor: "#1890ff"}}>
-                            <strong>URL Original: </strong><p>{this.state.datos_url.URLOriginal}</p>
-                            <strong>URL Corta: </strong><p>{`${window.location.hostname }/${CryptoJS.AES.decrypt(localStorage.getItem("url"),'secreto').toString(CryptoJS.enc.Utf8)}`}</p>
+                            <strong>URL Original: </strong><p><a>{this.state.datos_url.URLOriginal}</a></p>
+                            <strong>URL Corta: </strong><p><a>{urlCorta}</a></p>
                         </div>                
                     </Col>
                     <Col span={8}>
@@ -107,12 +111,12 @@ export default class MenuURL extends Component {
                       <QRCode value={CryptoJS.AES.decrypt(localStorage.getItem("url"),'secreto').toString(CryptoJS.enc.Utf8)} />
                     </Col>
                 </Row>           
-                <Row style={{textAlign: "left", padding: 5,border: 1,borderStyle: "dashed",borderColor: "#1890ff",marginTop:10}}>
-                <Col span={12}>
-                    <VictoryPie data={this.state.pieData} colorScale={["tomato", "orange", "gold", "cyan", "navy" ]}/>
+                <Row style={{ textAlign: "left", padding: 5,border: 1,borderStyle: "dashed",borderColor: "#1890ff",marginTop:10}}>
+                  <Col span={12}>
+                    <VictoryPie height={200} data={this.state.pieData} colorScale={["tomato", "orange", "gold", "cyan", "navy" ]}/>
                   </Col>
                   <Col span={12}>
-                  <VictoryChart theme={VictoryTheme.material} >
+                  <VictoryChart height={200} theme={VictoryTheme.material} >
                       <VictoryArea data={this.state.chartData} style={{ data: { fill: "#c43a31" } }}/>
                       <VictoryAxis/>
                     </VictoryChart>        
